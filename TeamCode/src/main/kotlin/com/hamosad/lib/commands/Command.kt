@@ -75,8 +75,12 @@ class ParallelCommandGroup(vararg commands: Command): Command() {
     }
 
     override fun execute() {
-        for (command in activeCommandsList) {
+        val iterator = activeCommandsList.iterator()
+        while (iterator.hasNext()) {
+            val command = iterator.next()
+
             command.execute()
+
             if (command.isFinished()) {
                 command.onEnd(false)
                 activeCommandsList.remove(command)
