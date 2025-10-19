@@ -1,4 +1,5 @@
 package com.hamosad.lib.commands
 
-class Subsystem {
+abstract class Subsystem {
+    abstract fun periodic()
 }
