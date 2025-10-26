@@ -1,0 +1,38 @@
+package com.hamosad.lib.components.motors
+
+import com.hamosad.lib.math.Rotation2d
+import com.hamosad.lib.math.Volts
+import com.qualcomm.robotcore.hardware.CRServo
+import com.qualcomm.robotcore.hardware.DcMotorSimple
+import com.qualcomm.robotcore.hardware.HardwareMap
+import com.qualcomm.robotcore.hardware.Servo
+
+enum class Direction {
+    FORWARD,
+    REVERSE
+}
+
+class HaCRServoMotor(name: String, hardwareMap: HardwareMap) {
+    val CRservo: CRServo = hardwareMap.get(CRServo::class.java, name)
+
+    fun setVoltage(volts: Volts) {
+        CRservo.power = volts / 6
+    }
+
+    fun setDirection(direction: Direction) {
+        when (direction) {
+            Direction.FORWARD -> CRservo.setDirection(DcMotorSimple.Direction.FORWARD)
+            Direction.REVERSE -> CRservo.setDirection(DcMotorSimple.Direction.REVERSE)
+        }
+    }
+}
+
+class HaServoMotor(name: String, hardwareMap: HardwareMap) {
+    val servo: Servo = hardwareMap.get(Servo::class.java, name)
+
+    fun setPosition(position: Rotation2d) {
+        if (0 < position.asDegrees && position.asDegrees < 180) {
+            servo.position = position.asDegrees
+        }
+    }
+}
