@@ -12,6 +12,8 @@ class CommandScheduler(val subsystems: List<Subsystem>) {
             }
         }
     }
+
+    /** Schedules one command. meant to be used while robot is operating. */
     fun scheduleCommand(command: Command) {
         val iterator = activeCommands.iterator()
 
@@ -27,6 +29,7 @@ class CommandScheduler(val subsystems: List<Subsystem>) {
         activeCommands.add(command)
     }
 
+    /** Core loop function. */
     fun execute() {
         for (subsystem in subsystems) {
             subsystem.periodic()
