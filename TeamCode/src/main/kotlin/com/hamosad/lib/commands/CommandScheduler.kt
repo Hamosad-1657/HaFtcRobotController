@@ -1,9 +1,11 @@
 package com.hamosad.lib.commands
 
+// TODO: Add telemetry
 object CommandScheduler {
     private val activeCommands: MutableList<Command> = mutableListOf()
 
     private var subsystems: MutableList<Subsystem> = mutableListOf()
+    val subsystemAmount: Int get() = subsystems.count()
 
     /** Register a subsystem to the scheduler. note that the subsystem is not wiped when reset is called. To wipe subsystems use wipeSubsystems */
     fun registerSubsystem(subsystem: Subsystem) {
@@ -13,7 +15,6 @@ object CommandScheduler {
     fun wipeSubsystems() {
         subsystems.clear()
     }
-
 
     /** Call after assigning default commands for subsystems and registering subsystems, and when robot is supposed to start. */
     fun initialize() {
