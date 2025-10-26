@@ -1,22 +1,34 @@
 package com.hamosad.lib.commands
 
-class CommandScheduler(val subsystems: List<Subsystem>) {
-    val activeCommands: MutableList<Command> = mutableListOf()
+object CommandScheduler {
+    private val activeCommands: MutableList<Command> = mutableListOf()
+
+    private var subsystems: MutableList<Subsystem> = mutableListOf()
+
+    /** Register a subsystem to the scheduler. note that the subsystem is not wiped when reset is called. To wipe subsystems use wipeSubsystems */
+    fun registerSubsystem(subsystem: Subsystem) {
+        if (!subsystems.contains(subsystem)) subsystems.add(subsystem)
+    }
+
+    fun wipeSubsystems() {
+        subsystems.clear()
+    }
 
 
-    /** Call after assigning default commands for subsystems */
+    /** Call after assigning default commands for subsystems and registering subsystems, and when robot is supposed to start. */
     fun initialize() {
         for (subsystem in subsystems) {
             if (subsystem.defaultCommand != null) {
-                scheduleCommand(subsystem.defaultCommand!!)
+                activeCommands.add(subsystem.defaultCommand!!)
             }
         }
     }
 
     /** Schedules one command. meant to be used while robot is operating. */
     fun scheduleCommand(command: Command) {
-        val iterator = activeCommands.iterator()
+        if (activeCommands.contains(command)) return
 
+        val iterator = activeCommands.iterator()
         while (iterator.hasNext()) {
             val activeCommand = iterator.next()
 
