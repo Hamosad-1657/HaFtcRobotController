@@ -4,7 +4,9 @@ package com.hamosad.lib.commands
 object CommandScheduler {
     private val activeCommands: MutableList<Command> = mutableListOf()
 
-    private var subsystems: MutableList<Subsystem> = mutableListOf()
+    var subsystems: MutableList<Subsystem> = mutableListOf()
+        private set
+
     val subsystemAmount: Int get() = subsystems.count()
 
     /** Register a subsystem to the scheduler. note that the subsystem is not wiped when reset is called. To wipe subsystems use wipeSubsystems */
