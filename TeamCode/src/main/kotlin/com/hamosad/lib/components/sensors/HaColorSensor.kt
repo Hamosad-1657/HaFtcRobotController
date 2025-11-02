@@ -7,8 +7,8 @@ import com.qualcomm.robotcore.hardware.ColorSensor
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 
-class HaColorSensor(hardwareMap: HardwareMap) {
-    val colorSensor: RevColorSensorV3 = hardwareMap.get(RevColorSensorV3::class.java, "color_sensor")
+class HaColorSensor(hardwareMap: HardwareMap, name: String) {
+    val colorSensor: RevColorSensorV3 = hardwareMap.get(RevColorSensorV3::class.java, name)
 
     init {
         colorSensor.enableLed(true)

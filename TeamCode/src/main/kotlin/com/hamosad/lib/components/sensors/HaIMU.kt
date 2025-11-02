@@ -8,8 +8,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference
 
-class HaIMU(hardwareMap: HardwareMap) {
-    private val imu: IMU = hardwareMap.get(IMU::class.java, "IMU")
+class HaIMU(hardwareMap: HardwareMap, name: String) {
+    private val imu: IMU = hardwareMap.get(IMU::class.java, name)
 
     init {
         imu.resetYaw()
