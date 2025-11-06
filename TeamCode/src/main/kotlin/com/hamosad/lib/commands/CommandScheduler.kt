@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 object CommandScheduler {
     private val activeCommands: MutableList<Command> = mutableListOf()
 
-    val subsystems: MutableList<Subsystem> = mutableListOf()
+    private val subsystems: MutableList<Subsystem> = mutableListOf()
 
     private val triggers: MutableList<Trigger> = mutableListOf()
 
@@ -57,21 +57,26 @@ object CommandScheduler {
         activeCommands.add(command)
     }
 
+    fun endCommand(command: Command) {
+        if (activeCommands.contains(command)) {
+            command.onEnd(true)
+            activeCommands.remove(command)
+        }
+    }
+
+    fun toggleCommand(command: Command) {
+        if (activeCommands.contains(command)) {
+            endCommand(command)
+        } else {
+            scheduleCommand(command)
+        }
+    }
+
     /** Core loop function. */
     fun execute() {
         // Trigger handling
         for (trigger in triggers) {
-            for (command in trigger.getCommandsToRun()) {
-                if (command !in activeCommands) {
-                    activeCommands.add(command)
-                }
-            }
-
-            for (command in trigger.getCommandsToNotRun()) {
-                if (command in activeCommands) {
-                    activeCommands.remove(command)
-                }
-            }
+            trigger.evaluate()
         }
 
         // Subsystem handling
