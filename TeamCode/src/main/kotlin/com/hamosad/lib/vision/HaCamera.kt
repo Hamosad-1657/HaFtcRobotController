@@ -1,21 +1,33 @@
 package com.hamosad.lib.vision
 
+import com.qualcomm.robotcore.hardware.HardwareMap
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation
+import org.firstinspires.ftc.robotcore.external.navigation.Position
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles
+import org.firstinspires.ftc.vision.VisionPortal
+import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase
 import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor
 
-class HaCamera(val aprilTagLibrary: AprilTagLibrary) {
+class HaCamera(
+    val hardwareMap: HardwareMap,
+    val cameraPosition: Position,
+    val cameraOrientation: YawPitchRollAngles,
+    val tagFamily: AprilTagProcessor.TagFamily,
+    val name: String) {
     private val aprilTagProcessorBuilder: AprilTagProcessor.Builder = AprilTagProcessor.Builder()
 
-    // Optional: specify a custom Library of AprilTags.
     init {
-        aprilTagProcessorBuilder.setTagLibrary(aprilTagLibrary)
-        // Optional: set other custom features of the AprilTag Processor (4 are shown here).
-        aprilTagProcessorBuilder.setDrawTagID(true);       // Default: true, for all detections.
-        aprilTagProcessorBuilder.setDrawTagOutline(true);  // Default: true, when tag size was provided (thus eligible for pose estimation).
-        aprilTagProcessorBuilder.setDrawAxes(true);        // Default: false.
-        aprilTagProcessorBuilder.setDrawCubeProjection(true);        // Default: false.
-    }   // The OpMode must have already created a Library.
+        // Define Processor Builder
+        aprilTagProcessorBuilder.setTagLibrary(AprilTagGameDatabase.getCurrentGameTagLibrary())
+        aprilTagProcessorBuilder.setDrawTagID(true)
+        aprilTagProcessorBuilder.setDrawTagOutline(true)
+        aprilTagProcessorBuilder.setDrawAxes(true)
+        aprilTagProcessorBuilder.setDrawCubeProjection(true)
+        aprilTagProcessorBuilder.setCameraPose(cameraPosition, cameraOrientation)
+        aprilTagProcessorBuilder.setTagFamily(tagFamily)
 
-    // Create an AprilTagProcessor by calling build()
-    public val aprilTagProcessor = aprilTagProcessorBuilder.build();
+        //Define visionPortal builder
+        val visionPortalBuilder: VisionPortal.Builder = VisionPortal.Builder()
+    }
 }
