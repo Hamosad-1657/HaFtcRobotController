@@ -1,28 +1,40 @@
 package com.hamosad.lib.commands
 
-// TODO: Add telemetry
+import com.qualcomm.robotcore.hardware.HardwareMap
+
+/** A singleton that handles commands, subsystem periodic, and telemetry sent by subsystems. */
 object CommandScheduler {
     private val activeCommands: MutableList<Command> = mutableListOf()
 
-    var subsystems: MutableList<Subsystem> = mutableListOf()
-        private set
+    private val subsystems: MutableList<Subsystem> = mutableListOf()
 
-    val subsystemAmount: Int get() = subsystems.count()
+    private val triggers: MutableList<Trigger> = mutableListOf()
 
-    /** Register a subsystem to the scheduler. note that the subsystem is not wiped when reset is called. To wipe subsystems use wipeSubsystems */
+    /** Register a subsystem to the scheduler. note that the subsystem is not wiped when reset is called. To wipe subsystems use [wipeSubsystems] */
     fun registerSubsystem(subsystem: Subsystem) {
-        if (!subsystems.contains(subsystem)) subsystems.add(subsystem)
+        if (!subsystems.contains(subsystem)) {
+            subsystems.add(subsystem)
+        }
     }
 
+    /** Not intended to be used regularly. */
     fun wipeSubsystems() {
         subsystems.clear()
+    }
+
+    fun registerTrigger(trigger: Trigger) {
+        triggers.add(trigger)
+    }
+
+    fun wipeTriggers() {
+        triggers.clear()
     }
 
     /** Call after assigning default commands for subsystems and registering subsystems, and when robot is supposed to start. */
     fun initialize() {
         for (subsystem in subsystems) {
             if (subsystem.defaultCommand != null) {
-                activeCommands.add(subsystem.defaultCommand!!)
+                scheduleCommand(subsystem.defaultCommand!!)
             }
         }
     }
@@ -44,12 +56,34 @@ object CommandScheduler {
         activeCommands.add(command)
     }
 
+    fun endCommand(command: Command) {
+        if (activeCommands.contains(command)) {
+            command.onEnd(true)
+            activeCommands.remove(command)
+        }
+    }
+
+    fun toggleCommand(command: Command) {
+        if (activeCommands.contains(command)) {
+            endCommand(command)
+        } else {
+            scheduleCommand(command)
+        }
+    }
+
     /** Core loop function. */
     fun execute() {
+        // Trigger handling
+        for (trigger in triggers) {
+            trigger.evaluate()
+        }
+
+        // Subsystem handling
         for (subsystem in subsystems) {
             subsystem.periodic()
         }
 
+        // Command handling
         val iterator = activeCommands.iterator()
             while (iterator.hasNext()) {
                 val command = iterator.next()
@@ -61,6 +95,7 @@ object CommandScheduler {
                 }
             }
 
+        // Subsystem default command handling
         for (subsystem in subsystems) {
             if (!activeCommands.any { it.requirements.any { it == subsystem } }) {
                 if (subsystem.defaultCommand != null) {
@@ -71,8 +106,9 @@ object CommandScheduler {
 
     }
 
-    /** Wipes the schedulers memory of commands, and appropriately ends them. Use when transitioning from auto to teleop or anything similar. */
+    /** Wipes the schedulers memory of commands and triggers, and appropriately ends them. Use when transitioning from auto to teleop or anything similar. */
     fun reset() {
+        wipeTriggers()
         for (command in activeCommands) {
             command.onEnd(true)
         }
