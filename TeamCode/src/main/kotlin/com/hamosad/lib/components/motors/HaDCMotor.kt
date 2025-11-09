@@ -15,7 +15,7 @@ enum class DCMotorStopMode {
 }
 
 
-class HaMotor(name: String, hardwareMap: HardwareMap, val ticksPerRotation: Int) {
+class HaMotor(name: String, hardwareMap: HardwareMap, val ticksPerRotation: Int = 0) {
     private val motor = hardwareMap.get(DcMotorEx::class.java, name)
     val currentVelocity get() = motor.velocity
     val currentPosition get() = motor.currentPosition
@@ -34,7 +34,7 @@ class HaMotor(name: String, hardwareMap: HardwareMap, val ticksPerRotation: Int)
     }
 
     fun resetEncoder() {
-        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER)
+        motor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
     }
 
     fun setVoltage(voltage: Volts) {
@@ -42,13 +42,13 @@ class HaMotor(name: String, hardwareMap: HardwareMap, val ticksPerRotation: Int)
     }
 
     fun setPosition(position: Rotation2d) {
-        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION)
-        motor.setTargetPosition(position.asRotations.toInt() * ticksPerRotation)
+        motor.mode = DcMotor.RunMode.RUN_TO_POSITION
+        motor.targetPosition = position.asRotations.toInt() * ticksPerRotation
     }
 
     fun setVelocity(velocity: AngularVelocity) {
-        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER)
-        (motor as DcMotorEx).setVelocity(velocity.asRPM * ticksPerRotation * 60)
+        motor.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        (motor as DcMotorEx).velocity = velocity.asRPM * ticksPerRotation * 60
     }
 
     fun setStopMode(dcMotorStopMode: DCMotorStopMode) {
