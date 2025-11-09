@@ -14,7 +14,7 @@ abstract class Subsystem() {
         hardwareMap = newHardwareMap
         isInitialized = true
     }
-    abstract var defaultCommand: Command?
+    var defaultCommand: Command? = null
 
     /** From the moment init is pressed, this function is called repeatedly until OpMode is stopped. */
     abstract fun periodic()
