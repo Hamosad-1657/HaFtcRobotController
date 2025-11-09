@@ -4,9 +4,10 @@ import com.hamosad.lib.commands.CommandScheduler
 import com.hamosad.lib.commands.Subsystem
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 
-abstract class CommandOpMode: OpMode() {
-    /** The list of subsystems this OpMode uses. initialize this in [disabledInit]. */
+abstract class CommandOpModeTeleop: OpMode() {
     abstract var subsystemsToUse: List<Subsystem>
+
+    var useTelemetry: Boolean = true
 
     /** Called once when OpMode init is pressed, before command scheduler initialization. */
     open fun disabledInit() {}
@@ -36,7 +37,9 @@ abstract class CommandOpMode: OpMode() {
     final override fun init_loop() {
         for (subsystem in subsystemsToUse) {
             subsystem.periodic()
+            if (useTelemetry) subsystem.updateTelemetry(super.telemetry)
         }
+        if (useTelemetry) super.telemetry.update()
     }
 
     // Called when start is pressed
@@ -47,6 +50,12 @@ abstract class CommandOpMode: OpMode() {
     // Called repeatedly after start is pressed
     final override fun loop() {
         CommandScheduler.execute()
+        if (useTelemetry) {
+            for (subsystem in subsystemsToUse) {
+                subsystem.updateTelemetry(super.telemetry)
+            }
+            super.telemetry.update()
+        }
     }
 
     // Called when stop is pressed

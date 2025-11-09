@@ -1,6 +1,7 @@
 package com.hamosad.lib.commands
 
 import com.qualcomm.robotcore.hardware.HardwareMap
+import org.firstinspires.ftc.robotcore.external.Telemetry
 
 abstract class Subsystem() {
     var isInitialized: Boolean = false
@@ -19,5 +20,5 @@ abstract class Subsystem() {
     /** From the moment init is pressed, this function is called repeatedly until OpMode is stopped. */
     abstract fun periodic()
 
-    // TODO: Telemetry
+    abstract fun updateTelemetry(telemetry: Telemetry)
 }

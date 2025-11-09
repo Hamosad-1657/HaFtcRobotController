@@ -2,7 +2,6 @@ package com.hamosad.lib.commands
 
 import com.qualcomm.robotcore.hardware.HardwareMap
 
-// TODO: Add telemetry
 /** A singleton that handles commands, subsystem periodic, and telemetry sent by subsystems. */
 object CommandScheduler {
     private val activeCommands: MutableList<Command> = mutableListOf()
