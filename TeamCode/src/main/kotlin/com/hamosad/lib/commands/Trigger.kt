@@ -11,9 +11,18 @@ enum class BindingType {
 }
 
 /** Stores a condition that the trigger is true when it is true, and otherwise false. Allows you to set bindings from the trigger to a command. */
-class Trigger(val condition: () -> Boolean) {
-    private val bindings: MutableMap<BindingType, Command> = mutableMapOf()
-
+class Trigger(private val condition: () -> Boolean) {
+    init {
+        CommandScheduler.registerTrigger(this)
+    }
+    private val bindings: MutableMap<BindingType, MutableList<Command>> = mutableMapOf(
+        Pair(BindingType.ON_TRUE, mutableListOf()),
+        Pair(BindingType.WHILE_TRUE, mutableListOf()),
+        Pair(BindingType.TOGGLE_ON_TRUE, mutableListOf()),
+        Pair(BindingType.ON_FALSE, mutableListOf()),
+        Pair(BindingType.WHILE_FALSE, mutableListOf()),
+        Pair(BindingType.TOGGLE_ON_FALSE, mutableListOf()),
+    )
 
     private var last = false
     fun evaluate() {
@@ -22,40 +31,80 @@ class Trigger(val condition: () -> Boolean) {
         val falling = last && !current
 
         for (binding in bindings) {
-            val command = binding.value
+            val commands = binding.value
             when (binding.key) {
                 BindingType.ON_TRUE ->
                     if (rising) {
-                        CommandScheduler.scheduleCommand(command)
+                        for (command in commands) {
+                            CommandScheduler.scheduleCommand(command)
+                        }
                     }
                 BindingType.WHILE_TRUE ->
                     if (rising) {
-                        CommandScheduler.scheduleCommand(command)
+                        for (command in commands) {
+                            CommandScheduler.scheduleCommand(command)
+                        }
                     } else if (falling) {
-                        CommandScheduler.endCommand(command)
+                        for (command in commands) {
+                            CommandScheduler.endCommand(command)
+                        }
                     }
                 BindingType.TOGGLE_ON_TRUE ->
                     if (rising) {
-                        CommandScheduler.toggleCommand(command)
+                        for (command in commands) {
+                            CommandScheduler.toggleCommand(command)
+                        }
                     }
 
                 BindingType.ON_FALSE ->
                     if (falling) {
-                        CommandScheduler.scheduleCommand(command)
+                        for (command in commands) {
+                            CommandScheduler.scheduleCommand(command)
+                        }
                     }
                 BindingType.WHILE_FALSE ->
                     if (falling) {
-                        CommandScheduler.scheduleCommand(command)
+                        for (command in commands) {
+                            CommandScheduler.scheduleCommand(command)
+                        }
                     } else if (rising) {
-                        CommandScheduler.endCommand(command)
+                        for (command in commands) {
+                            CommandScheduler.endCommand(command)
+                        }
                     }
                 BindingType.TOGGLE_ON_FALSE ->
                     if (falling) {
-                        CommandScheduler.toggleCommand(command)
+                        for (command in commands) {
+                            CommandScheduler.toggleCommand(command)
+                        }
                     }
             }
         }
 
         last = current
+    }
+
+    fun onTrue(command: Command) {
+        bindings[BindingType.ON_TRUE]?.add(command)
+    }
+
+    fun whileTrue(command: Command) {
+        bindings[BindingType.WHILE_TRUE]?.add(command)
+    }
+
+    fun toggleOnTrue(command: Command) {
+        bindings[BindingType.TOGGLE_ON_TRUE]?.add(command)
+    }
+
+    fun onFalse(command: Command) {
+        bindings[BindingType.ON_FALSE]?.add(command)
+    }
+
+    fun whileFalse(command: Command) {
+        bindings[BindingType.WHILE_FALSE]?.add(command)
+    }
+
+    fun toggleOnFalse(command: Command) {
+        bindings[BindingType.TOGGLE_ON_FALSE]?.add(command)
     }
 }
