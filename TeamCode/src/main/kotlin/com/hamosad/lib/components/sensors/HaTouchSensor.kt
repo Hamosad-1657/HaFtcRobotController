@@ -5,5 +5,5 @@ import com.qualcomm.robotcore.hardware.TouchSensor
 
 class HaTouchSensor(hardwareMap: HardwareMap, name: String) {
     val sensor: TouchSensor = hardwareMap.get(TouchSensor::class.java, name)
-    val isGettingTouched get() = sensor.isPressed
+    val isTouched get() = sensor.isPressed
 }
