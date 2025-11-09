@@ -13,22 +13,28 @@ enum class Direction {
 }
 
 class HaCRServoMotor(name: String, hardwareMap: HardwareMap) {
-    val CRservo: CRServo = hardwareMap.get(CRServo::class.java, name)
+    val cRServo: CRServo = hardwareMap.get(CRServo::class.java, name)
+    val currentPosition get() = cRServo.controller.getServoPosition(cRServo.portNumber)
 
     fun setVoltage(volts: Volts) {
-        CRservo.power = volts / 6
+        cRServo.power = volts / 6
     }
 
     fun setDirection(direction: Direction) {
         when (direction) {
-            Direction.FORWARD -> CRservo.direction = DcMotorSimple.Direction.FORWARD
-            Direction.REVERSE -> CRservo.direction = DcMotorSimple.Direction.REVERSE
+            Direction.FORWARD -> cRServo.direction = DcMotorSimple.Direction.FORWARD
+            Direction.REVERSE -> cRServo.direction = DcMotorSimple.Direction.REVERSE
         }
+    }
+
+    fun setTargetAngle(angle: Rotation2d) {
+        cRServo.controller.setServoPosition(cRServo.portNumber, angle.asRotations)
     }
 }
 
 class HaServoMotor(name: String, hardwareMap: HardwareMap) {
     val servo: Servo = hardwareMap.get(Servo::class.java, name)
+    val currentPosition get() = servo.position
 
     fun setPosition(position: Rotation2d) {
         if (0 < position.asDegrees && position.asDegrees < 180) {
