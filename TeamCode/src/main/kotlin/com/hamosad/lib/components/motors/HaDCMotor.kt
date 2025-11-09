@@ -1,6 +1,7 @@
 package com.hamosad.lib.components.motors
 
 import com.hamosad.lib.math.AngularVelocity
+import com.hamosad.lib.math.PIDController
 import com.hamosad.lib.math.Rotation2d
 import com.hamosad.lib.math.Volts
 import com.qualcomm.robotcore.hardware.DcMotor
@@ -14,19 +15,29 @@ enum class DCMotorStopMode {
     BRAKE,
 }
 
+enum class MotorType(val ticksPerRotation: Double) {
+    GO_BUILDA5202(537.7),
+}
 
-class HaMotor(name: String, hardwareMap: HardwareMap, val ticksPerRotation: Int = 0) {
+
+class HaMotor(name: String, hardwareMap: HardwareMap, val type: MotorType) {
     private val motor = hardwareMap.get(DcMotorEx::class.java, name)
-    val currentVelocity get() = motor.velocity
+    private val controller = PIDController(0.0, 0.0, 0.0)
+
+    val currentVelocity get() = AngularVelocity.fromRPS(motor.velocity / type.ticksPerRotation)
     val currentPosition get() = motor.currentPosition
 
     init {
         motor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        motor.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        motor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
     }
 
-    fun stopMotor() {
-        motor.power = 0.0
+    fun configPID(p: Double = 0.0, i: Double = 0.0, d: Double = 0.0) {
+        controller.updateGains(p, i, d)
+    }
+
+    fun setFeedForward(feedforward: Double) {
+        controller.updateGains(newFeedForward = feedforward)
     }
 
     fun setDirection(direction: DcMotorSimple.Direction) {
@@ -35,20 +46,23 @@ class HaMotor(name: String, hardwareMap: HardwareMap, val ticksPerRotation: Int 
 
     fun resetEncoder() {
         motor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        motor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
     }
 
     fun setVoltage(voltage: Volts) {
         motor.power = voltage / 12
     }
 
+    fun stopMotor() {
+        motor.power = 0.0
+    }
+
     fun setPosition(position: Rotation2d) {
-        motor.mode = DcMotor.RunMode.RUN_TO_POSITION
-        motor.targetPosition = position.asRotations.toInt() * ticksPerRotation
+
     }
 
     fun setVelocity(velocity: AngularVelocity) {
-        motor.mode = DcMotor.RunMode.RUN_USING_ENCODER
-        (motor as DcMotorEx).velocity = velocity.asRPM * ticksPerRotation * 60
+
     }
 
     fun setStopMode(dcMotorStopMode: DCMotorStopMode) {
@@ -56,9 +70,5 @@ class HaMotor(name: String, hardwareMap: HardwareMap, val ticksPerRotation: Int 
             DCMotorStopMode.COAST -> motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
             DCMotorStopMode.BRAKE -> motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         }
-    }
-
-    fun setPid(p: Double = 0.0, i: Double = 0.0, d: Double = 0.0, f: Double = 0.0) {
-        motor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, PIDFCoefficients(p, i, d, f))
     }
 }
