@@ -12,8 +12,15 @@ import kotlin.math.sign
 /**
  * Automatically flips y value of joysticks and applies deadband
  */
-class HaController(hardwareMap: HardwareMap, val deadband: Double, private val power: Int = 1, name: String) {
-    val controller: Gamepad = hardwareMap.get(Gamepad::class.java, name)
+class HaController private constructor(val deadband: Double, private val power: Int = 1) {
+    lateinit var controller: Gamepad
+
+    constructor(hardwareMap: HardwareMap, deadband: Double, name: String, power: Int = 1) : this(deadband, power) {
+        controller = hardwareMap.get(Gamepad::class.java, name)
+    }
+    constructor(gamepad: Gamepad, deadband: Double, power: Int): this (deadband, power) {
+        controller = gamepad
+    }
 
     fun getLeftX(): Double {
         return continuousDeadband(controller.left_stick_x.toDouble(), deadband).powerProfile(power)
