@@ -1,35 +1,34 @@
 package com.hamosad.lib.components.sensors
 
-import android.R
 import com.hamosad.lib.math.Length
 import com.qualcomm.hardware.rev.RevColorSensorV3
 import com.qualcomm.robotcore.hardware.ColorSensor
 import com.qualcomm.robotcore.hardware.HardwareMap
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor
+import com.qualcomm.robotcore.hardware.NormalizedRGBA
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 
 class HaColorSensor(hardwareMap: HardwareMap, name: String) {
     val colorSensor: RevColorSensorV3 = hardwareMap.get(RevColorSensorV3::class.java, name)
 
     init {
+        colorSensor.initialize()
         colorSensor.enableLed(true)
     }
 
-    val red get() = colorSensor.red()
-    val blue get() = colorSensor.blue()
-    val green get() = colorSensor.green()
-    val ARGBValue get() = colorSensor.argb()
+    val maxValue = 4095.0
+    val red get() = (colorSensor.red()).toDouble() / maxValue * 255
+    val blue get() = (colorSensor.blue()).toDouble() / maxValue * 255
+    val green get() = (colorSensor.green()).toDouble() / maxValue * 255
+
+    val color get() = Color(red.toInt(), green.toInt(), blue.toInt())
 
     val distance: Length get() = Length.fromCentimeters(colorSensor.getDistance(DistanceUnit.CM))
 
-    val combined: Int get() = colorSensor.argb()
-
     fun isInColorRange(color: Color, deviation: Int): Boolean {
-        if (red in (color.red - deviation)..(color.red + deviation) &&
-            blue in (color.blue -deviation)..(color.blue + deviation) &&
-            green in (color.green - deviation)..(color.green + deviation)) {
-            return true
-        }
-        return false
+        return red.toInt() in (color.red - deviation)..(color.red + deviation) &&
+                blue.toInt() in (color.blue -deviation)..(color.blue + deviation) &&
+                green.toInt() in (color.green - deviation)..(color.green + deviation)
     }
 
     fun enableLed() {
@@ -44,7 +43,7 @@ class HaColorSensor(hardwareMap: HardwareMap, name: String) {
 class Color(val red: Int, val green: Int, val blue: Int) {
     companion object {
         val red = Color(255, 0 ,0)
-        val green = Color (0, 255, 0)
+        val green = Color(0, 255, 0)
         val blue = Color(0, 0, 255)
         val yellow = Color(255,  255, 0 )
         val white = Color(255, 255, 255)

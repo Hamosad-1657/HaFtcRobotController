@@ -21,8 +21,8 @@ class HaCRServoMotor(name: String, hardwareMap: HardwareMap) {
 
     fun setDirection(direction: Direction) {
         when (direction) {
-            Direction.FORWARD -> CRservo.setDirection(DcMotorSimple.Direction.FORWARD)
-            Direction.REVERSE -> CRservo.setDirection(DcMotorSimple.Direction.REVERSE)
+            Direction.FORWARD -> CRservo.direction = DcMotorSimple.Direction.FORWARD
+            Direction.REVERSE -> CRservo.direction = DcMotorSimple.Direction.REVERSE
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.hamosad1657.lib.controllers
 
+import com.hamosad.lib.commands.Trigger
 import com.hamosad.lib.math.Rotation2d
 import com.hamosad.lib.math.continuousDeadband
 import com.qualcomm.robotcore.hardware.Gamepad
@@ -12,15 +13,31 @@ import kotlin.math.sign
 /**
  * Automatically flips y value of joysticks and applies deadband
  */
-class HaController private constructor(val deadband: Double, private val power: Int = 1) {
-    lateinit var controller: Gamepad
+class HaCommandController(val controller: Gamepad, val deadband: Double, private val power: Int = 1) {
+    fun triangle(): Trigger = Trigger { controller.triangle }
+    fun circle(): Trigger = Trigger { controller.circle }
+    fun cross(): Trigger = Trigger { controller.cross }
+    fun square(): Trigger = Trigger { controller.square }
 
-    constructor(hardwareMap: HardwareMap, deadband: Double, name: String, power: Int = 1) : this(deadband, power) {
-        controller = hardwareMap.get(Gamepad::class.java, name)
-    }
-    constructor(gamepad: Gamepad, deadband: Double, power: Int): this (deadband, power) {
-        controller = gamepad
-    }
+    fun rJoyPressed(): Trigger = Trigger { controller.right_stick_button }
+    fun lJoyPressed(): Trigger = Trigger { controller.left_stick_button }
+
+    fun options(): Trigger = Trigger { controller.options }
+    fun share(): Trigger = Trigger { controller.share }
+    fun psButton(): Trigger = Trigger { controller.ps }
+
+    fun dpadUp(): Trigger = Trigger { controller.dpad_up }
+    fun dpadRight(): Trigger = Trigger { controller.dpad_right }
+    fun dpadDown(): Trigger = Trigger { controller.dpad_down }
+    fun dpadLeft(): Trigger = Trigger { controller.dpad_left }
+
+    fun r1(): Trigger = Trigger { controller.right_bumper }
+    fun l1(): Trigger = Trigger { controller.left_bumper }
+    fun r2Pressed(): Trigger = Trigger { controller.right_trigger > 0.7 }
+    fun l2Pressed(): Trigger = Trigger { controller.left_trigger > 0.7 }
+
+    fun getR2(): Double = controller.right_trigger.toDouble()
+    fun getL2(): Double = controller.left_trigger.toDouble()
 
     fun getLeftX(): Double {
         return continuousDeadband(controller.left_stick_x.toDouble(), deadband).powerProfile(power)
