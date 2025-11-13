@@ -21,23 +21,24 @@ enum class MotorType(val ticksPerRotation: Double) {
 
 
 class HaMotor(name: String, hardwareMap: HardwareMap, val type: MotorType) {
+    // Property declarations
     private val motor = hardwareMap.get(DcMotorEx::class.java, name)
-    private val controller = PIDController(0.0, 0.0, 0.0)
-
-    val currentVelocity get() = AngularVelocity.fromRPS(motor.velocity / type.ticksPerRotation)
-    val currentPosition get() = motor.currentPosition
 
     init {
         motor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         motor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
     }
 
-    fun configPID(p: Double = 0.0, i: Double = 0.0, d: Double = 0.0) {
-        controller.updateGains(p, i, d)
+    val currentVelocity: AngularVelocity get() = AngularVelocity.fromRPS(motor.velocity / type.ticksPerRotation)
+    val currentPosition: Rotation2d get() = Rotation2d.fromRotations(motor.currentPosition / type.ticksPerRotation)
+
+    // Basic motor control
+    fun setVoltage(voltage: Volts) {
+        motor.power = voltage / 12.0
     }
 
-    fun setFeedForward(feedforward: Double) {
-        controller.updateGains(newFeedForward = feedforward)
+    fun stopMotor() {
+        motor.power = 0.0
     }
 
     fun setDirection(direction: DcMotorSimple.Direction) {
@@ -47,22 +48,6 @@ class HaMotor(name: String, hardwareMap: HardwareMap, val type: MotorType) {
     fun resetEncoder() {
         motor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         motor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-    }
-
-    fun setVoltage(voltage: Volts) {
-        motor.power = voltage / 12
-    }
-
-    fun stopMotor() {
-        motor.power = 0.0
-    }
-
-    fun setPosition(position: Rotation2d) {
-
-    }
-
-    fun setVelocity(velocity: AngularVelocity) {
-
     }
 
     fun setStopMode(dcMotorStopMode: DCMotorStopMode) {
