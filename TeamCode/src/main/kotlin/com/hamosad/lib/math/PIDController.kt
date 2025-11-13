@@ -1,6 +1,10 @@
 package com.hamosad.lib.math
 
-class PIDController(private var p: Double, private var i: Double, private var d: Double, private var f: Double = 0.0) {
+data class PIDGains(val p: Double = 0.0, val i: Double = 0.0, val d: Double = 0.0, val f: Double = 0.0)
+
+class PIDController(private var p: Double = 0.0, private var i: Double = 0.0, private var d: Double = 0.0, private var f: Double = 0.0) {
+    constructor(gains: PIDGains): this(gains.p, gains.i, gains.d, gains.f)
+
     fun updateGains(newP: Double = p, newI: Double = i, newD: Double = d, newFeedForward: Double = f) {
         p = newP
         i = newI
@@ -26,5 +30,15 @@ class PIDController(private var p: Double, private var i: Double, private var d:
         lastIntegral = integral
 
         return proportional + integral + derivative + f
+    }
+
+    fun integralReset() {
+        lastIntegral = 0.0
+    }
+
+    fun resetController() {
+        lastTimestamp = 0L
+        lastError = 0.0
+        integralReset()
     }
 }
