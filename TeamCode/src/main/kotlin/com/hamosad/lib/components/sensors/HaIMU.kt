@@ -1,5 +1,6 @@
 package com.hamosad.lib.components.sensors
 
+import com.hamosad.lib.math.Rotation2d
 import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.IMU
@@ -15,10 +16,16 @@ class HaIMU(hardwareMap: HardwareMap, name: String) {
         imu.resetYaw()
     }
 
-    val currentYaw: Double get() =
-        imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle.toDouble()
-    val currentPitch: Double get() =
-        imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).secondAngle.toDouble()
-    val currentRoll: Double get() =
-        imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle.toDouble()
+    val currentYaw: Rotation2d get() =
+        Rotation2d.fromDegrees(
+            imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle.toDouble()
+        )
+    val currentPitch: Rotation2d get() =
+        Rotation2d.fromDegrees(
+            imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).secondAngle.toDouble()
+        )
+    val currentRoll: Rotation2d get() =
+        Rotation2d.fromDegrees(
+            imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle.toDouble()
+        )
 }
