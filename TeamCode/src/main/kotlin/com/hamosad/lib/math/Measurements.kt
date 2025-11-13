@@ -53,6 +53,52 @@ class Rotation2d private constructor(private val angleRotations: Double) {
     operator fun div(other: Int): Rotation2d = Rotation2d(this.angleRotations / other)
 }
 
+class Rotation3d private constructor(
+    private val pitchAngleRotations: Double,
+    private val yawAngleRotations: Double,
+    ) {
+    companion object {
+        fun fromRotations(pitchAngleRotations: Double, yawAngleRotations: Double): Rotation3d =
+            Rotation3d(pitchAngleRotations, yawAngleRotations)
+
+        fun fromDegrees(pitchAngleRotations: Double, yawAngleRotations: Double): Rotation3d =
+            Rotation3d(pitchAngleRotations / 360, yawAngleRotations / 360)
+
+        fun fromRadians(pitchAngleRotations: Double, yawAngleRotations: Double,): Rotation3d =
+            Rotation3d(pitchAngleRotations / (2 * PI), yawAngleRotations / (2 * PI))
+    }
+
+    val asRotations get() = Pair(pitchAngleRotations, yawAngleRotations)
+    val asDegrees get() = Pair(pitchAngleRotations * 360, yawAngleRotations * 360)
+    val asRadians get() = Pair(pitchAngleRotations * 2 * PI, yawAngleRotations * 2 * PI)
+
+
+    operator fun plus(other: Rotation3d): Rotation3d = Rotation3d(
+        this.pitchAngleRotations + other.pitchAngleRotations,
+        this.yawAngleRotations + other.yawAngleRotations
+    )
+    operator fun minus(other: Rotation3d): Rotation3d = Rotation3d(
+        this.pitchAngleRotations - other.pitchAngleRotations,
+        this.yawAngleRotations - other.yawAngleRotations
+    )
+    operator fun times(other: Double): Rotation3d = Rotation3d(
+        this.pitchAngleRotations - other,
+        this.yawAngleRotations - other
+    )
+    operator fun times(other: Int): Rotation3d = Rotation3d(
+        this.pitchAngleRotations * other,
+        this.yawAngleRotations * other
+    )
+    operator fun div(other: Double): Rotation3d = Rotation3d(
+        this.pitchAngleRotations / other,
+        this.yawAngleRotations / other
+    )
+    operator fun div(other: Int): Rotation3d = Rotation3d(
+        this.pitchAngleRotations / other,
+        this.yawAngleRotations / other
+    )
+}
+
 class AngularVelocity private constructor(private val rps: Double) {
     companion object {
         fun fromRPS(rps: Double): AngularVelocity = AngularVelocity(rps)
@@ -103,4 +149,13 @@ class Translation2d(val x: Double, val y: Double) {
     operator fun times(other: Int): Translation2d = Translation2d(this.x * other, this.y * other)
     operator fun div(other: Double): Translation2d = Translation2d(this.x / other, this.y / other)
     operator fun div(other: Int): Translation2d = Translation2d(this.x / other, this.y / other)
+}
+
+class Translation3d(val x: Double, val y: Double, val z: Double) {
+    operator fun plus(other: Translation3d): Translation3d = Translation3d(this.x + other.x, this.y + other.y, this.z + other.z)
+    operator fun minus(other: Translation3d): Translation3d = Translation3d(this.x - other.x, this.y - other.y, this.z - other.z)
+    operator fun times(other: Double): Translation3d = Translation3d(this.x * other, this.y * other, this.z * other)
+    operator fun times(other: Int): Translation3d = Translation3d(this.x * other, this.y * other, this.z * other)
+    operator fun div(other: Double): Translation3d = Translation3d(this.x / other, this.y / other, this.z / other)
+    operator fun div(other: Int): Translation3d = Translation3d(this.x / other, this.y / other, this.z / other)
 }
