@@ -3,10 +3,12 @@ package com.hamosad.lib.math
 import kotlin.math.PI
 import kotlin.math.absoluteValue
 import kotlin.math.cos
+import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.tanh
 
 private const val INCH_TO_METER_RATIO = 0.0254
+
 
 class Length private constructor(private val lengthMeters: Double) {
     companion object {
@@ -167,6 +169,31 @@ class Translation3d(val x: Double, val y: Double, val z: Double) {
     operator fun div(other: Int): Translation3d = Translation3d(this.x / other, this.y / other, this.z / other)
 }
 
-class Pose2d(val translation2d: Translation2d, val rotation3d: Rotation3d) {
+class Pose2d(var translation2d: Translation2d, var rotation2d: Rotation2d, var robotPoseStdDevs: RobotPoseStdDevs) {
+    fun addPoseEstimate(newPose: Pose2d) {
+        val translationXVariance = robotPoseStdDevs.translationX.pow(2)
+        val translationYVariance = robotPoseStdDevs.translationY.pow(2)
+        val rotationVariance = robotPoseStdDevs.rotation.pow(2)
 
+        val newTranslationXVariance = newPose.robotPoseStdDevs.translationX.pow(2)
+        val newTranslationYVariance = newPose.robotPoseStdDevs.translationY.pow(2)
+        val newRotationVariance = newPose.robotPoseStdDevs.rotation.pow(2)
+
+        // K is short for kalman filter gain
+        val translationXK = translationXVariance / (translationXVariance + newTranslationXVariance)
+        val translationYK = translationYVariance / (translationYVariance + newTranslationYVariance)
+        val rotationK = rotationVariance / (rotationVariance + newRotationVariance)
+
+        val newTranslationX = translation2d.x + translationXK * (newPose.translation2d.x - translation2d.x)
+        val newTranslationY = translation2d.y + translationYK * (newPose.translation2d.y - translation2d.y)
+        val newRotation: Rotation2d = Rotation2d.fromRotations(rotation2d.asRotations + rotationK * (newPose.rotation2d.asRotations - rotation2d.asRotations))
+
+        translation2d = Translation2d(newTranslationX, newTranslationY)
+        rotation2d = newRotation
+        robotPoseStdDevs = RobotPoseStdDevs(
+            (1 - translationXK) * robotPoseStdDevs.translationX,
+            (1 - translationYK) * robotPoseStdDevs.translationY,
+            (1 - rotationK) * robotPoseStdDevs.rotation
+        )
+    }
 }
