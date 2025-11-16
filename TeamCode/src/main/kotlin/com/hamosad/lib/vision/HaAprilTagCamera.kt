@@ -92,6 +92,7 @@ class HaAprilTagCamera(
                 aprilTagStdDevs.twoTags
             }
 
+    // the estimated pose is given in values of double I don't know why
     val estimatedPose: Pose2d? get() {
         if (!hasTargets || !isInRange || closestTarget == null || allTargets == null) null
         if (maxDecisionMargin < closestTarget!!.decisionMargin) null

@@ -1,6 +1,8 @@
 package com.hamosad.lib.vision
 
 import androidx.annotation.ColorInt
+import com.hamosad.lib.math.Translation2d
+import com.hamosad.lib.math.Translation3d
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.util.SortOrder
 import org.firstinspires.ftc.vision.VisionPortal
@@ -49,6 +51,16 @@ class HaColorCamera(
         colorProcessor.addFilter(ColorBlobLocatorProcessor.BlobFilter(blobCriteria, minBlobFilter, maxBlobFilter))
     }
     
-    val results get() = colorProcessor.blobs
+    val results: List<ColorBlobLocatorProcessor.Blob> get() = colorProcessor.blobs
+    val numberOfBlobs: Int get() = results.size
+    val bestBlob: ColorBlobLocatorProcessor.Blob get() = results[0]
+
+    //this is also a double I don't know wht are the units, I am again very sorry, Love Amit.
+    val blobCircleSize: Double get() = bestBlob.circle.radius.toDouble()
+    val blobBoxHeight: Double get() = bestBlob.boxFit.size.height
+    val blobBoxWidth: Double get() = bestBlob.boxFit.size.width
+
+    val blobAsCircleTranslation2d: Translation2d get() = Translation2d(bestBlob.circle.x.toDouble(), bestBlob.circle.y.toDouble())
+    val blobAsBoxTranslation2d: Translation2d get() = Translation2d(bestBlob.boxFit.center.x, bestBlob.boxFit.center.y)
 
 }
