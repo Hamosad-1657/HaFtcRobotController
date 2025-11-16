@@ -39,9 +39,9 @@ object MecanumKinematics {
                 highestAngularVelocity = speed
             }
         }
-        if (highestAngularVelocity.asRPS.absoluteValue > Constants.MAX_ROTATION_SPEED.asRPS) {
+        if (highestAngularVelocity.asRPS.absoluteValue > Constants.MAX_WHEEL_SPEED.asRPS) {
             val factor =
-                Constants.MAX_ROTATION_SPEED.asRPS / highestAngularVelocity.asRPS.absoluteValue
+                Constants.MAX_WHEEL_SPEED.asRPS / highestAngularVelocity.asRPS.absoluteValue
             val factoredSpeeds: MutableList<AngularVelocity> = mutableListOf()
             for (speed in unfactoredSpeeds) {
                 factoredSpeeds.add(speed * factor)
@@ -52,8 +52,8 @@ object MecanumKinematics {
     }
 
     fun translationToMotorVelocities(speed: Translation2d): List<AngularVelocity> {
-        val angularVelocityX = AngularVelocity.fromRPS(speed.x / (sqrt(2.0) * PI * Constants.WHEEL_CIRCUMFERENCE.asMeters))
-        val angularVelocityY = AngularVelocity.fromRPS(speed.y / (sqrt(2.0) * PI * Constants.WHEEL_CIRCUMFERENCE.asMeters))
+        val angularVelocityX = AngularVelocity.fromRPS(speed.x / (sqrt(2.0) * PI * Constants.WHEEL_RADIUS.asMeters))
+        val angularVelocityY = AngularVelocity.fromRPS(speed.y / (sqrt(2.0) * PI * Constants.WHEEL_RADIUS.asMeters))
 
         val unfactoredSpeeds: MutableList<AngularVelocity> = mutableListOf()
 
@@ -67,7 +67,7 @@ object MecanumKinematics {
     /** [angularVelocity] is clockwise positive. */
     fun angularVelocityToMotorVelocities(angularVelocity: AngularVelocity): List<AngularVelocity> {
         val angularVelocity = AngularVelocity.fromRPS(
-            angularVelocity.asRPS * Constants.CHASSIS_CIRCUMFERENCE.asMeters / Constants.WHEEL_CIRCUMFERENCE.asMeters
+            angularVelocity.asRPS * Constants.CHASSIS_RADIUS.asMeters / Constants.WHEEL_RADIUS.asMeters
         )
 
         val speeds: MutableList<AngularVelocity> = mutableListOf()

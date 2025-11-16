@@ -4,6 +4,7 @@ import kotlin.math.PI
 import kotlin.math.absoluteValue
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlin.math.sqrt
 import kotlin.math.tanh
 
 private const val INCH_TO_METER_RATIO = 0.0254
@@ -82,6 +83,9 @@ class Translation2d(val x: Double, val y: Double) {
         length * cos(angle.asRadians),
         length * sin(angle.asRadians)
     )
+
+    val length: Double
+        get() = sqrt(x*x + y*y)
 
     val rotation: Rotation2d get() {
         val theta = Rotation2d.fromRadians(tanh(y.absoluteValue / x.absoluteValue))

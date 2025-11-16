@@ -6,6 +6,8 @@ import com.hamosad.lib.components.motors.MotorType
 import com.hamosad.lib.components.sensors.HaIMU
 import com.hamosad.lib.math.AngularVelocity
 import com.hamosad.lib.math.PIDController
+import com.hamosad.lib.math.Rotation2d
+import com.hamosad.lib.math.Translation2d
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.teamcode.subsystems.mecanum.MecanumConstants as Constants
@@ -33,6 +35,14 @@ object MecanumSubsystem: Subsystem() {
         imu = HaIMU(hardwareMap!!, "IMU")
     }
 
+    private val currentAngle: Rotation2d
+        get() = imu?.currentYaw ?: Rotation2d.fromDegrees(0.0)
+
+    // Low level functions
+    private fun resetGyro() {
+        imu?.resetYaw()
+    }
+
     // Low level motor PID
     private var wheelVelocitySetpoints: List<AngularVelocity> = listOf()
 
@@ -45,23 +55,31 @@ object MecanumSubsystem: Subsystem() {
         }
     }
 
-    private fun spinClockwise(angularVelocity: AngularVelocity) {
+    fun spinClockwise(angularVelocity: AngularVelocity) {
         controlMotors(Kinematics.angularVelocityToMotorVelocities(angularVelocity))
     }
 
-    private fun robotRelativeDrive(chassisSpeeds: ChassisSpeeds) {
-        controlMotors(Kinematics.chassisSpeedsToMotorVelocities(chassisSpeeds))
+    fun drive(fieldRelative: Boolean, chassisSpeeds: ChassisSpeeds) {
+        val updatedSpeeds = if (fieldRelative) ChassisSpeeds(
+            Translation2d(
+                chassisSpeeds.translation.length,
+                chassisSpeeds.translation.rotation - currentAngle
+            ),
+            chassisSpeeds.omega
+        ) else chassisSpeeds
+
+        controlMotors(Kinematics.chassisSpeedsToMotorVelocities(updatedSpeeds))
     }
 
-    private fun fieldRelativeDrive(chassisSpeeds: ChassisSpeeds) {
-        // TODO
-    }
 
+
+    // Periodic
     override fun periodic() {
 
     }
 
+    // Telemetry
     override fun updateTelemetry(telemetry: Telemetry) {
-
+        telemetry.addData("Angle deg", currentAngle.asDegrees)
     }
 }

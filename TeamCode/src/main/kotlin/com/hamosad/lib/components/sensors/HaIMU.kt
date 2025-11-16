@@ -28,4 +28,8 @@ class HaIMU(hardwareMap: HardwareMap, name: String) {
         Rotation2d.fromDegrees(
             imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle.toDouble()
         )
+
+    fun resetYaw() {
+        imu.resetYaw()
+    }
 }
