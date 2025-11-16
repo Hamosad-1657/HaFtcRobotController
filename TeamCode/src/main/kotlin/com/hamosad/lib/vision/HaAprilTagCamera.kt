@@ -12,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.robotcore.external.navigation.Position
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles
+import org.firstinspires.ftc.vision.VisionPortal
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection
 import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor
@@ -32,6 +33,8 @@ data class AprilTagsStdDevs(
 class HaAprilTagCamera(
     hardwareMap: HardwareMap,
     name: String,
+    pixelWidth: Int = 640, pixelLength: Int = 480,
+    videoFormat: VisionPortal.StreamFormat = VisionPortal.StreamFormat.YUY2,
     private val maxTrustRange: Length,
     private val maxDecisionMargin: Double,
     cameraPositionMeters: Translation3d,
@@ -39,7 +42,7 @@ class HaAprilTagCamera(
     private val aprilTagStdDevs: AprilTagsStdDevs,
     tagFamily: AprilTagProcessor.TagFamily = AprilTagProcessor.TagFamily.TAG_36h11
 ):
-    HaCamera(hardwareMap, name, aprilTagProcessor) {
+    HaCamera(hardwareMap, name, aprilTagProcessor, pixelWidth, pixelLength, videoFormat) {
     companion object {
         private lateinit var aprilTagProcessor: AprilTagProcessor
     }
