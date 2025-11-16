@@ -4,8 +4,7 @@ import kotlin.math.abs
 
 fun continuousDeadband(value: Double, deadband: Double): Double {
     if (deadband !in 0.0..1.0) {
-        return value
-        //TODO: ADD TELEMETRY NOT MY PROBLEM GOOD LUCK P.S LOVE AMIT
+        throw IllegalArgumentException("Deadband must be between 0 and 1")
     }
     if (value !in -1.0..1.0) {
         return value

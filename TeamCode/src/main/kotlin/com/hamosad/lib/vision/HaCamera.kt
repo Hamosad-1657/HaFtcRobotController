@@ -40,6 +40,8 @@ open class HaCamera(
 
     val visionPortal: VisionPortal get() = visionPortalBuilder.build()
     val currentFPS: Int get() = visionPortal.fps.toInt()
+    val isConnected: Boolean get() = visionPortal.cameraState.name != "ERROR"
+    val isStreaming: Boolean get() = visionPortal.cameraState.name == "STREAMING"
 
     /** Closes the view on the driver station */
     fun closeView() {
