@@ -176,7 +176,7 @@ fun waitCommand(time: Seconds): Command = object: Command() {
 infix fun Command.withTimeout(condition: () -> Boolean): Command = ParallelRaceCommandGroup(this, waitUntilCommand(condition))
 infix fun Command.withTimeout(time: Seconds): Command = ParallelRaceCommandGroup(this, waitCommand(time))
 
-infix fun Command.andThen(other: Command): SequentialCommandGroup = SequentialCommandGroup(this, other)
+//infix fun Command.andThen(other: Command): SequentialCommandGroup = SequentialCommandGroup(this, other)
 
 infix fun Command.raceWith(other: Command): Command = ParallelRaceCommandGroup(this, other)
 

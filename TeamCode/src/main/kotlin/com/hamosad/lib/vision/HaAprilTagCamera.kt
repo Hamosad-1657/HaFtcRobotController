@@ -7,15 +7,17 @@ import com.hamosad.lib.math.Rotation2d
 import com.hamosad.lib.math.Translation2d
 import com.hamosad.lib.math.Translation3d
 import com.qualcomm.robotcore.hardware.HardwareMap
-import com.qualcomm.robotcore.robot.Robot
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.robotcore.external.navigation.Position
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles
+import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration
+import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibrationIdentity
 import org.firstinspires.ftc.vision.VisionPortal
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection
 import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor
+import org.opencv.core.Size
 import java.util.ArrayList
 import kotlin.system.measureNanoTime
 
@@ -33,13 +35,14 @@ data class AprilTagsStdDevs(
 class HaAprilTagCamera(
     hardwareMap: HardwareMap,
     name: String,
-    pixelWidth: Int = 640, pixelLength: Int = 480,
-    videoFormat: VisionPortal.StreamFormat = VisionPortal.StreamFormat.YUY2,
     private val maxTrustRange: Length,
     private val maxDecisionMargin: Double,
+    /** X: right, Y Down, Z: forward */
     cameraPositionMeters: Translation3d,
     cameraOrientation: Rotation3d,
     private val aprilTagStdDevs: AprilTagsStdDevs,
+    pixelWidth: Int = 640, pixelLength: Int = 480,
+    videoFormat: VisionPortal.StreamFormat = VisionPortal.StreamFormat.YUY2,
     tagFamily: AprilTagProcessor.TagFamily = AprilTagProcessor.TagFamily.TAG_36h11
 ):
     HaCamera(hardwareMap, name, aprilTagProcessor, pixelWidth, pixelLength, videoFormat) {
@@ -65,13 +68,20 @@ class HaAprilTagCamera(
                 ),
                 YawPitchRollAngles(
                     AngleUnit.DEGREES,
-                    cameraOrientation.yawAngleRotations * 360,
-                    cameraOrientation.pitchAngleRotations * 360,
-                    cameraOrientation.rollAngleRotations * 360,
+                    cameraOrientation.yawAngle.asDegrees,
+                    cameraOrientation.pitchAngle.asDegrees,
+                    cameraOrientation.rollAngle.asDegrees,
                     measureNanoTime {}
                 ))
             .setTagFamily(tagFamily)
         aprilTagProcessor = aprilTagProcessorBuilder.build()
+//        val cameraCalibration: CameraCalibration = CameraCalibration(, Size(
+//            pixelWidth.toDouble(),
+//            pixelLength.toDouble()
+//        )
+//        )
+//
+//        aprilTagProcessor.init(pixelWidth, pixelLength, cameraCalibration)
     }
 
     val hasTargets: Boolean get() = aprilTagProcessor.detections.isNotEmpty()

@@ -57,56 +57,68 @@ class Rotation2d private constructor(private val angleRotations: Double) {
     operator fun div(other: Int): Rotation2d = Rotation2d(this.angleRotations / other)
 }
 
-class Rotation3d private constructor(
-    val pitchAngleRotations: Double,
-    val yawAngleRotations: Double,
-    val rollAngleRotations: Double
+class Rotation3d(
+    val pitchAngle: Rotation2d,
+    val yawAngle: Rotation2d,
+    val rollAngle: Rotation2d
     ) {
     companion object {
         fun fromRotations(pitchAngleRotations: Double, yawAngleRotations: Double, rollAngleRotations: Double): Rotation3d =
-            Rotation3d(pitchAngleRotations, yawAngleRotations, rollAngleRotations)
+            Rotation3d(
+                Rotation2d.fromRotations(pitchAngleRotations),
+                Rotation2d.fromRotations(yawAngleRotations),
+                Rotation2d.fromRotations(rollAngleRotations)
+            )
 
-        fun fromDegrees(pitchAngleRotations: Double, yawAngleRotations: Double, rollAngleRotations: Double): Rotation3d =
-            Rotation3d(pitchAngleRotations / 360, yawAngleRotations / 360, rollAngleRotations / 360)
+        fun fromDegrees(pitchAngleDegrees: Double, yawAngleDegrees: Double, rollAngleDegrees: Double): Rotation3d =
+            Rotation3d(
+                Rotation2d.fromDegrees(pitchAngleDegrees),
+                Rotation2d.fromDegrees(yawAngleDegrees),
+                Rotation2d.fromDegrees(rollAngleDegrees)
+            )
 
-        fun fromRadians(pitchAngleRotations: Double, yawAngleRotations: Double, rollAngleRotations: Double): Rotation3d =
-            Rotation3d(pitchAngleRotations / (2 * PI), yawAngleRotations / (2 * PI), rollAngleRotations / (2 * PI))
+        fun fromRadians(pitchAngleRadians: Double, yawAngleRadians: Double, rollAngleRadians: Double): Rotation3d =
+            Rotation3d(
+                Rotation2d.fromRadians(pitchAngleRadians),
+                Rotation2d.fromRadians(yawAngleRadians),
+                Rotation2d.fromRadians(rollAngleRadians)
+                )
     }
 
-    val asRotations get() = Triple(pitchAngleRotations, yawAngleRotations, rollAngleRotations)
-    val asDegrees get() = Triple(pitchAngleRotations * 360, yawAngleRotations * 360, rollAngleRotations * 360)
-    val asRadians get() = Triple(pitchAngleRotations * 2 * PI, yawAngleRotations * 2 * PI, rollAngleRotations * 2* PI)
+    val asRotations get() = Triple(pitchAngle.asRotations, yawAngle.asRotations, rollAngle.asRotations)
+    val asDegrees get() = Triple(pitchAngle.asDegrees, yawAngle.asDegrees, rollAngle.asDegrees)
+    val asRadians get() = Triple(pitchAngle.asRadians, yawAngle.asRadians, rollAngle.asRadians)
 
 
     operator fun plus(other: Rotation3d): Rotation3d = Rotation3d(
-        this.pitchAngleRotations + other.pitchAngleRotations,
-        this.yawAngleRotations + other.yawAngleRotations,
-        this.rollAngleRotations + other.rollAngleRotations
+        this.pitchAngle + other.pitchAngle,
+        this.yawAngle + other.yawAngle,
+        this.rollAngle + other.rollAngle
     )
     operator fun minus(other: Rotation3d): Rotation3d = Rotation3d(
-        this.pitchAngleRotations - other.pitchAngleRotations,
-        this.yawAngleRotations - other.yawAngleRotations,
-        this.rollAngleRotations - other.rollAngleRotations
+        this.pitchAngle - other.pitchAngle,
+        this.yawAngle - other.yawAngle,
+        this.rollAngle - other.rollAngle
     )
     operator fun times(other: Double): Rotation3d = Rotation3d(
-        this.pitchAngleRotations * other,
-        this.yawAngleRotations * other,
-        this.rollAngleRotations * other
+        this.pitchAngle * other,
+        this.yawAngle * other,
+        this.rollAngle * other
     )
     operator fun times(other: Int): Rotation3d = Rotation3d(
-        this.pitchAngleRotations * other,
-        this.yawAngleRotations * other,
-        this.rollAngleRotations * other
+        this.pitchAngle * other,
+        this.yawAngle * other,
+        this.rollAngle * other
     )
     operator fun div(other: Double): Rotation3d = Rotation3d(
-        this.pitchAngleRotations / other,
-        this.yawAngleRotations / other,
-        this.rollAngleRotations / other
+        this.pitchAngle / other,
+        this.yawAngle / other,
+        this.rollAngle / other
     )
     operator fun div(other: Int): Rotation3d = Rotation3d(
-        this.pitchAngleRotations / other,
-        this.yawAngleRotations / other,
-        this.rollAngleRotations / other
+        this.pitchAngle / other,
+        this.yawAngle / other,
+        this.rollAngle / other
     )
 }
 
