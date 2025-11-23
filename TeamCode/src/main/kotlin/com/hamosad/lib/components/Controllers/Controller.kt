@@ -1,10 +1,9 @@
-package com.hamosad1657.lib.controllers
+package com.hamosad.lib.components.Controllers
 
 import com.hamosad.lib.commands.Trigger
 import com.hamosad.lib.math.Rotation2d
 import com.hamosad.lib.math.continuousDeadband
 import com.qualcomm.robotcore.hardware.Gamepad
-import com.qualcomm.robotcore.hardware.HardwareMap
 import kotlin.math.PI
 import kotlin.math.atan2
 import kotlin.math.pow
@@ -13,46 +12,46 @@ import kotlin.math.sign
 /**
  * Automatically flips y value of joysticks and applies deadband
  */
-class HaCommandController(val controller: Gamepad, val deadband: Double, private val power: Int = 1) {
-    fun triangle(): Trigger = Trigger { controller.triangle }
-    fun circle(): Trigger = Trigger { controller.circle }
-    fun cross(): Trigger = Trigger { controller.cross }
-    fun square(): Trigger = Trigger { controller.square }
+class HaCommandController(val controller: () -> Gamepad?, val deadband: Double, private val power: Int = 1) {
+    fun triangle(): Trigger = Trigger { controller()?.triangle ?: false }
+    fun circle(): Trigger = Trigger { controller()?.circle ?: false }
+    fun cross(): Trigger = Trigger { controller()?.cross ?: false }
+    fun square(): Trigger = Trigger { controller()?.square ?: false }
 
-    fun rJoyPressed(): Trigger = Trigger { controller.right_stick_button }
-    fun lJoyPressed(): Trigger = Trigger { controller.left_stick_button }
+    fun rJoyPressed(): Trigger = Trigger { controller()?.right_stick_button ?: false }
+    fun lJoyPressed(): Trigger = Trigger { controller()?.left_stick_button ?: false }
 
-    fun options(): Trigger = Trigger { controller.options }
-    fun share(): Trigger = Trigger { controller.share }
-    fun psButton(): Trigger = Trigger { controller.ps }
+    fun options(): Trigger = Trigger { controller()?.options ?: false }
+    fun share(): Trigger = Trigger { controller()?.share ?: false }
+    fun psButton(): Trigger = Trigger { controller()?.ps ?: false }
 
-    fun dpadUp(): Trigger = Trigger { controller.dpad_up }
-    fun dpadRight(): Trigger = Trigger { controller.dpad_right }
-    fun dpadDown(): Trigger = Trigger { controller.dpad_down }
-    fun dpadLeft(): Trigger = Trigger { controller.dpad_left }
+    fun dpadUp(): Trigger = Trigger { controller()?.dpad_up ?: false }
+    fun dpadRight(): Trigger = Trigger { controller()?.dpad_right ?: false }
+    fun dpadDown(): Trigger = Trigger { controller()?.dpad_down ?: false }
+    fun dpadLeft(): Trigger = Trigger { controller()?.dpad_left ?: false }
 
-    fun r1(): Trigger = Trigger { controller.right_bumper }
-    fun l1(): Trigger = Trigger { controller.left_bumper }
-    fun r2Pressed(): Trigger = Trigger { controller.right_trigger > 0.7 }
-    fun l2Pressed(): Trigger = Trigger { controller.left_trigger > 0.7 }
+    fun r1(): Trigger = Trigger { controller()?.right_bumper ?: false }
+    fun l1(): Trigger = Trigger { controller()?.left_bumper ?: false }
+    fun r2Pressed(): Trigger = Trigger { (controller()?.right_trigger ?: 0.0f) > 0.7 }
+    fun l2Pressed(): Trigger = Trigger { (controller()?.left_trigger ?: 0.0f) > 0.7 }
 
-    fun getR2(): Double = controller.right_trigger.toDouble()
-    fun getL2(): Double = controller.left_trigger.toDouble()
+    fun getR2(): Double = controller()?.right_trigger?.toDouble() ?: 0.0
+    fun getL2(): Double = controller()?.left_trigger?.toDouble() ?: 0.0
 
     fun getLeftX(): Double {
-        return continuousDeadband(controller.left_stick_x.toDouble(), deadband).powerProfile(power)
+        return continuousDeadband(controller()?.left_stick_x?.toDouble() ?: 0.0, deadband).powerProfile(power)
     }
 
     fun getLeftY(): Double {
-        return -continuousDeadband(controller.left_stick_y.toDouble(), deadband).powerProfile(power)
+        return -continuousDeadband(controller()?.left_stick_y?.toDouble() ?: 0.0, deadband).powerProfile(power)
     }
 
     fun getRightX(): Double {
-        return continuousDeadband(controller.right_stick_x.toDouble(), deadband).powerProfile(power)
+        return continuousDeadband(controller()?.right_stick_x?.toDouble() ?: 0.0, deadband).powerProfile(power)
     }
 
     fun getRightY(): Double {
-        return -continuousDeadband(controller.right_stick_y.toDouble(), deadband).powerProfile(power)
+        return -continuousDeadband(controller()?.right_stick_y?.toDouble() ?: 0.0, deadband).powerProfile(power)
     }
 
     private fun joyStickToAngle(x: Double, y: Double): Rotation2d {
