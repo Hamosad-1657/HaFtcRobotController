@@ -70,6 +70,7 @@ object MecanumSubsystem: Subsystem() {
         controlMotors(Kinematics.angularVelocityToMotorVelocities(angularVelocity))
     }
 
+    var requestedChassisSpeedsTranslation: Translation2d = Translation2d(0.0, 0.0)
     fun drive(fieldRelative: Boolean, chassisSpeeds: ChassisSpeeds) {
         val updatedSpeeds = if (fieldRelative) ChassisSpeeds(
             Translation2d(
@@ -79,6 +80,7 @@ object MecanumSubsystem: Subsystem() {
             chassisSpeeds.omega
         ) else chassisSpeeds
 
+        requestedChassisSpeedsTranslation = chassisSpeeds.translation
         controlMotors(Kinematics.chassisSpeedsToMotorVelocities(updatedSpeeds))
     }
 
@@ -94,5 +96,22 @@ object MecanumSubsystem: Subsystem() {
         telemetry.addData("Angle deg", currentAngle.asDegrees)
         telemetry.addData("is the camera streaming", camera?.isStreaming)
         telemetry.addData("is the camera connected", camera?.isConnected)
+        telemetry.addData("Requested chassis speeds angle deg", requestedChassisSpeedsTranslation.rotation.asDegrees)
+
+        // FL, BR, FR, BL
+        if(wheelVelocitySetpoints.lastIndex == 3) {
+        telemetry.addData("Commanded velocity FL RPM", wheelVelocitySetpoints[0].asRPM)
+        telemetry.addData("Commanded velocity BR RPM", wheelVelocitySetpoints[1].asRPM)
+        telemetry.addData("Commanded velocity FR RPM", wheelVelocitySetpoints[2].asRPM)
+        telemetry.addData("Commanded velocity BL RPM", wheelVelocitySetpoints[3].asRPM)
+        } else {
+            telemetry.addData("Commanded velocity FL RPM", 0.0)
+            telemetry.addData("Commanded velocity BR RPM", 0.0)
+            telemetry.addData("Commanded velocity FR RPM", 0.0)
+            telemetry.addData("Commanded velocity BL RPM", 0.0)
+        }
+        // telemetry.addData("Pose X", aprilTagCamera!!.estimatedPose?.translation2d?.x)
+        // telemetry.addData("Pose Y", aprilTagCamera!!.estimatedPose?.translation2d?.y)
+        // telemetry.addData("Pose Rotation", aprilTagCamera!!.estimatedPose?.rotation2d?.asDegrees)
     }
 }

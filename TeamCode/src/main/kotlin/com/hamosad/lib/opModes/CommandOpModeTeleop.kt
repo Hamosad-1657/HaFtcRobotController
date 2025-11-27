@@ -23,9 +23,8 @@ abstract class CommandOpModeTeleop: OpMode() {
         disabledInit()
 
         for (subsystem in subsystemsToUse) {
-            if (!subsystem.isInitialized) {
-                subsystem.init(super.hardwareMap)
-            }
+            // TODO: ADD A INIT THAT WORKS ONLY ON THE FIRST OP MODE
+            subsystem.init(super.hardwareMap)
             CommandScheduler.registerSubsystem(subsystem)
         }
 
