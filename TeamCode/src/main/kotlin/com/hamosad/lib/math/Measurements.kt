@@ -3,6 +3,7 @@ package com.hamosad.lib.math
 import com.hamosad.lib.vision.RobotPoseStdDevs
 import kotlin.math.PI
 import kotlin.math.absoluteValue
+import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin
@@ -45,9 +46,12 @@ class Rotation2d private constructor(private val angleRotations: Double) {
         fun fromRadians(angleRadians: Double): Rotation2d = Rotation2d(angleRadians / (2 * PI))
     }
 
-    val asRotations get() = angleRotations
-    val asDegrees get() = angleRotations * 360
-    val asRadians get() = angleRotations * 2 * PI
+    val asRotations = angleRotations
+    val asDegrees = angleRotations * 360
+    val asRadians = angleRotations * 2 * PI
+
+    val cosine = cos(asRadians)
+    val sine = sin(asRadians)
 
     operator fun plus(other: Rotation2d): Rotation2d = Rotation2d(this.angleRotations + other.angleRotations)
     operator fun minus(other: Rotation2d): Rotation2d = Rotation2d(this.angleRotations - other.angleRotations)
@@ -148,26 +152,14 @@ class AngularVelocity private constructor(private val rps: Double) {
 
 class Translation2d(val x: Double, val y: Double) {
     constructor(length: Double, angle: Rotation2d): this(
-        length * cos(angle.asRadians),
-        length * sin(angle.asRadians)
+        length * angle.cosine,
+        length * angle.sine,
     )
 
     val length: Double
         get() = sqrt(x*x + y*y)
 
-    val rotation: Rotation2d get() {
-        val theta = Rotation2d.fromRadians(tanh(y.absoluteValue / x.absoluteValue))
-
-        return if (x >= 0 && y >= 0) {
-            theta
-        } else if (x <= 0 && y >= 0) {
-            Rotation2d.fromDegrees(180.0) - theta
-        } else if (x <= 0 && y <= 0) {
-            Rotation2d.fromDegrees(180.0) + theta
-        } else {
-            Rotation2d.fromDegrees(360.0) - theta
-        }
-    }
+    val rotation: Rotation2d get() = Rotation2d.fromRadians(atan2(y, x))
 
     operator fun plus(other: Translation2d): Translation2d = Translation2d(this.x + other.x, this.y + other.y)
     operator fun minus(other: Translation2d): Translation2d = Translation2d(this.x - other.x, this.y - other.y)

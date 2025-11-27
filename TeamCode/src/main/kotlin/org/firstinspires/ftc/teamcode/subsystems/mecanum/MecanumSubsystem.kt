@@ -81,7 +81,6 @@ object MecanumSubsystem: Subsystem() {
     private var wheelVelocitySetpoints: List<AngularVelocity> = listOf()
 
     /** Called in loops to control PID of motors. */
-    // TODO: DOESN'T WORK STUPID SHIT RAHHHHHHHHHHHHHHHHHH
     private fun controlMotors(newSetpoints: List<AngularVelocity> = wheelVelocitySetpoints) {
         wheelVelocitySetpoints = newSetpoints
 
@@ -94,6 +93,7 @@ object MecanumSubsystem: Subsystem() {
         controlMotors(Kinematics.angularVelocityToMotorVelocities(angularVelocity))
     }
 
+    var requestedChassisSpeedsTranslation: Translation2d = Translation2d(0.0, 0.0)
     fun drive(fieldRelative: Boolean, chassisSpeeds: ChassisSpeeds) {
         val updatedSpeeds = if (fieldRelative) ChassisSpeeds(
             Translation2d(
@@ -103,6 +103,7 @@ object MecanumSubsystem: Subsystem() {
             chassisSpeeds.omega
         ) else chassisSpeeds
 
+        requestedChassisSpeedsTranslation = chassisSpeeds.translation
         controlMotors(Kinematics.chassisSpeedsToMotorVelocities(updatedSpeeds))
     }
 
@@ -125,18 +126,19 @@ object MecanumSubsystem: Subsystem() {
     // Telemetry
     override fun updateTelemetry(telemetry: Telemetry) {
         telemetry.addData("Angle deg", currentAngle.asDegrees)
+        telemetry.addData("Requested chassis speeds angle deg", requestedChassisSpeedsTranslation.rotation.asDegrees)
 
         // FL, BR, FR, BL
         if(wheelVelocitySetpoints.lastIndex == 3) {
-        telemetry.addData("Commanded velocity FL", wheelVelocitySetpoints[0].asRPM)
-        telemetry.addData("Commanded velocity BR", wheelVelocitySetpoints[1].asRPM)
-        telemetry.addData("Commanded velocity FR", wheelVelocitySetpoints[2].asRPM)
-        telemetry.addData("Commanded velocity BL", wheelVelocitySetpoints[3].asRPM)
+        telemetry.addData("Commanded velocity FL RPM", wheelVelocitySetpoints[0].asRPM)
+        telemetry.addData("Commanded velocity BR RPM", wheelVelocitySetpoints[1].asRPM)
+        telemetry.addData("Commanded velocity FR RPM", wheelVelocitySetpoints[2].asRPM)
+        telemetry.addData("Commanded velocity BL RPM", wheelVelocitySetpoints[3].asRPM)
         } else {
-            telemetry.addData("Commanded velocity FL", 0.0)
-            telemetry.addData("Commanded velocity BR", 0.0)
-            telemetry.addData("Commanded velocity FR", 0.0)
-            telemetry.addData("Commanded velocity BL", 0.0)
+            telemetry.addData("Commanded velocity FL RPM", 0.0)
+            telemetry.addData("Commanded velocity BR RPM", 0.0)
+            telemetry.addData("Commanded velocity FR RPM", 0.0)
+            telemetry.addData("Commanded velocity BL RPM", 0.0)
         }
         // telemetry.addData("Pose X", aprilTagCamera!!.estimatedPose?.translation2d?.x)
         // telemetry.addData("Pose Y", aprilTagCamera!!.estimatedPose?.translation2d?.y)

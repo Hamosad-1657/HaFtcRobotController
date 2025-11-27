@@ -17,7 +17,7 @@ class TestOpMode: CommandOpModeTeleop() {
 
     override fun configureDefaultCommands() {
         MecanumSubsystem.defaultCommand = MecanumSubsystem.angularVelocityDriveCommand(
-            false,
+            true,
             { controller.getLeftX() },
             { controller.getLeftY() },
             { controller.getRightX() },
