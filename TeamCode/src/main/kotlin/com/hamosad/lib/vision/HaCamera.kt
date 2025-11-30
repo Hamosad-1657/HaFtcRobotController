@@ -33,14 +33,15 @@ open class HaCamera(
         visionPortalBuilder.setCameraResolution(Size(pixelWidth, pixelLength))
         visionPortalBuilder.setStreamFormat(videoFormat)
         visionPortalBuilder.setLiveViewContainerId(visionPortalNumber)
-        visionPortalBuilder.setAutoStopLiveView(true)
+
+        visionPortalBuilder.setAutoStopLiveView(false)
         if (processor1 != null) {
             visionPortalBuilder.addProcessor(processor1)
             if (processor2 != null) visionPortalBuilder.addProcessor(processor2)
         }
     }
 
-    val visionPortal: VisionPortal get() = visionPortalBuilder.build()
+    val visionPortal: VisionPortal by lazy { visionPortalBuilder.build() }
     val currentFPS: Int get() = visionPortal.fps.toInt()
     val isConnected: Boolean get() = visionPortal.cameraState.name != "ERROR"
     val isStreaming: Boolean get() = visionPortal.cameraState.name == "STREAMING"
