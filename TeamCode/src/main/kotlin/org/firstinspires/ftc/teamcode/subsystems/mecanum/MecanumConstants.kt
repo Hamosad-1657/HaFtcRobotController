@@ -16,8 +16,8 @@ object MecanumConstants {
     val MAX_CHASSIS_ANGULAR_VELOCITY: AngularVelocity = AngularVelocity.fromRPS(6.0)
 
     val wheelGains: PIDGains = PIDGains(
-        p = 3.0,
-        i = 0.0,
+        p = 5.0,
+        i = 2.0,
         d = 0.0,
     )
 }

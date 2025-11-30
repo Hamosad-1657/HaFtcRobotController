@@ -146,14 +146,16 @@ object MecanumSubsystem: Subsystem() {
         // telemetry.addData("Pose Y", aprilTagCamera!!.estimatedPose?.translation2d?.y)
         // telemetry.addData("Pose Rotation", aprilTagCamera!!.estimatedPose?.rotation2d?.asDegrees)
 
-        dashboardPacket.put("FL setpoint RPM", wheelVelocitySetpoints[0].asRPM)
-        dashboardPacket.put("BR setpoint RPM", wheelVelocitySetpoints[1].asRPM)
-        dashboardPacket.put("FR setpoint RPM", wheelVelocitySetpoints[2].asRPM)
-        dashboardPacket.put("BL setpoint RPM", wheelVelocitySetpoints[3].asRPM)
+        if (wheelVelocitySetpoints.size == 4) {
+            dashboardPacket.put("FL setpoint RPM", wheelVelocitySetpoints[0].asRPM)
+            dashboardPacket.put("BR setpoint RPM", wheelVelocitySetpoints[1].asRPM)
+            dashboardPacket.put("FR setpoint RPM", wheelVelocitySetpoints[2].asRPM)
+            dashboardPacket.put("BL setpoint RPM", wheelVelocitySetpoints[3].asRPM)
 
-        dashboardPacket.put("FL setpoint RPM", motors[0].currentVelocity.asRPM)
-        dashboardPacket.put("BR setpoint RPM", motors[1].currentVelocity.asRPM)
-        dashboardPacket.put("FR setpoint RPM", motors[2].currentVelocity.asRPM)
-        dashboardPacket.put("BL setpoint RPM", motors[3].currentVelocity.asRPM)
+            dashboardPacket.put("FL velocity RPM", motors[0].currentVelocity.asRPM)
+            dashboardPacket.put("BR velocity RPM", motors[1].currentVelocity.asRPM)
+            dashboardPacket.put("FR velocity RPM", motors[2].currentVelocity.asRPM)
+            dashboardPacket.put("BL velocity RPM", motors[3].currentVelocity.asRPM)
+        }
     }
 }
