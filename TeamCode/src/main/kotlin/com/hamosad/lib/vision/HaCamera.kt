@@ -18,10 +18,12 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor
 open class HaCamera(
     val hardwareMap: HardwareMap,
     val name: String,
+    val visionPortalNumber: Int,
     val processor1: VisionProcessor? = null,
     pixelWidth: Int = 640, pixelLength: Int = 480,
     videoFormat: VisionPortal.StreamFormat = VisionPortal.StreamFormat.YUY2,
-    val processor2: VisionProcessor? = null ) {
+    val processor2: VisionProcessor? = null,
+    ) {
 
     private val visionPortalBuilder: VisionPortal.Builder = VisionPortal.Builder()
 
@@ -30,7 +32,7 @@ open class HaCamera(
         visionPortalBuilder.setCamera(hardwareMap.get(WebcamName::class.java, name))
         visionPortalBuilder.setCameraResolution(Size(pixelWidth, pixelLength))
         visionPortalBuilder.setStreamFormat(videoFormat)
-        visionPortalBuilder.enableLiveView(true)
+        visionPortalBuilder.setLiveViewContainerId(visionPortalNumber)
         visionPortalBuilder.setAutoStopLiveView(true)
         if (processor1 != null) {
             visionPortalBuilder.addProcessor(processor1)

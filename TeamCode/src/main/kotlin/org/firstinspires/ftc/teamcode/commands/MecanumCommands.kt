@@ -23,13 +23,13 @@ fun MecanumSubsystem.angularVelocityDriveCommand(
     ))
 }
 
-fun MecanumSubsystem.testMotorsCommand(motor: Int): Command = MecanumSubsystem.runCommand {
-    testMotors(motor)
-}
-
-fun MecanumSubsystem.testPIDCommand(): Command = MecanumSubsystem.runCommand {
-    testPID()
-}
+//fun MecanumSubsystem.testMotorsCommand(motor: Int): Command = MecanumSubsystem.runCommand {
+//    testMotors(motor)
+//}
+//
+//fun MecanumSubsystem.testPIDCommand(): Command = MecanumSubsystem.runCommand {
+//    testPID()
+//}
 
 //fun MecanumSubsystem.followPathCommand(path: Path, hardwareMap: HardwareMap): Command {
 //    val follower = PedroConstants.createFollower(hardwareMap)

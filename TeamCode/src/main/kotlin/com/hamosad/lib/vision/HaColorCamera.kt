@@ -24,7 +24,7 @@ class HaColorCamera(
     contourColor: Int?,
     boxFitColor: Int?,
     pixelWidth: Int = 640, pixelLength: Int = 480,
-) : HaCamera(hardwareMap, name, colorProcessor, pixelWidth, pixelLength) {
+) : HaCamera(hardwareMap, name, 5, colorProcessor, pixelWidth, pixelLength) {
 
     companion object {
         private lateinit var colorProcessor: ColorBlobLocatorProcessor
