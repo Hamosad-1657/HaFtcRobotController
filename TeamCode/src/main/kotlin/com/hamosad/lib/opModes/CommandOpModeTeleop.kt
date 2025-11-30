@@ -1,5 +1,7 @@
 package com.hamosad.lib.opModes
 
+import com.acmerobotics.dashboard.FtcDashboard
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.hamosad.lib.commands.CommandScheduler
 import com.hamosad.lib.commands.Subsystem
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
@@ -34,11 +36,15 @@ abstract class CommandOpModeTeleop: OpMode() {
 
     // Called repeatedly after init is pressed
     final override fun init_loop() {
+        val packet = TelemetryPacket()
         for (subsystem in subsystemsToUse) {
             subsystem.periodic()
-            if (useTelemetry) subsystem.updateTelemetry(super.telemetry)
+            if (useTelemetry) subsystem.updateTelemetry(super.telemetry, packet)
         }
-        if (useTelemetry) super.telemetry.update()
+        if (useTelemetry) {
+            super.telemetry.update()
+            FtcDashboard.getInstance().sendTelemetryPacket(packet)
+        }
     }
 
     // Called when start is pressed
@@ -49,11 +55,14 @@ abstract class CommandOpModeTeleop: OpMode() {
     // Called repeatedly after start is pressed
     final override fun loop() {
         CommandScheduler.execute()
+
         if (useTelemetry) {
+            val packet = TelemetryPacket()
             for (subsystem in subsystemsToUse) {
-                subsystem.updateTelemetry(super.telemetry)
+                subsystem.updateTelemetry(super.telemetry, packet)
             }
             super.telemetry.update()
+            FtcDashboard.getInstance().sendTelemetryPacket(packet)
         }
     }
 

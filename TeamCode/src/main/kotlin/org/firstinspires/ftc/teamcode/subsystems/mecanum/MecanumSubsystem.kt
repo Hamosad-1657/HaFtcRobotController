@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems.mecanum
 
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.hamosad.lib.commands.Subsystem
 import com.hamosad.lib.components.motors.HaMotor
 import com.hamosad.lib.components.motors.MotorType
@@ -124,7 +125,8 @@ object MecanumSubsystem: Subsystem() {
     }
 
     // Telemetry
-    override fun updateTelemetry(telemetry: Telemetry) {
+    override fun updateTelemetry(telemetry: Telemetry, dashboardPacket: TelemetryPacket) {
+
         telemetry.addData("Angle deg", currentAngle.asDegrees)
         telemetry.addData("Requested chassis speeds angle deg", requestedChassisSpeedsTranslation.rotation.asDegrees)
 
@@ -144,5 +146,14 @@ object MecanumSubsystem: Subsystem() {
         // telemetry.addData("Pose Y", aprilTagCamera!!.estimatedPose?.translation2d?.y)
         // telemetry.addData("Pose Rotation", aprilTagCamera!!.estimatedPose?.rotation2d?.asDegrees)
 
+        dashboardPacket.put("FL setpoint RPM", wheelVelocitySetpoints[0].asRPM)
+        dashboardPacket.put("BR setpoint RPM", wheelVelocitySetpoints[1].asRPM)
+        dashboardPacket.put("FR setpoint RPM", wheelVelocitySetpoints[2].asRPM)
+        dashboardPacket.put("BL setpoint RPM", wheelVelocitySetpoints[3].asRPM)
+
+        dashboardPacket.put("FL setpoint RPM", motors[0].currentVelocity.asRPM)
+        dashboardPacket.put("BR setpoint RPM", motors[1].currentVelocity.asRPM)
+        dashboardPacket.put("FR setpoint RPM", motors[2].currentVelocity.asRPM)
+        dashboardPacket.put("BL setpoint RPM", motors[3].currentVelocity.asRPM)
     }
 }
