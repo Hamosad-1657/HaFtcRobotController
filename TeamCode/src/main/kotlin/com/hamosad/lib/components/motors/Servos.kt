@@ -7,13 +7,14 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
 
-enum class Direction {
-    FORWARD,
-    REVERSE
-}
-
 class HaCRServoMotor(name: String, hardwareMap: HardwareMap) {
     private val crServo: CRServo = hardwareMap.get(CRServo::class.java, name)
+
+    var direction: DcMotorSimple.Direction
+        get() = crServo.direction
+        set(value) {
+            crServo.direction = value
+        }
 
     fun setVoltage(volts: Volts) {
         crServo.power = volts / 6
@@ -22,22 +23,20 @@ class HaCRServoMotor(name: String, hardwareMap: HardwareMap) {
     fun stopServo() {
         crServo.power = 0.0
     }
-
-    fun setDirection(direction: Direction) {
-        when (direction) {
-            Direction.FORWARD -> crServo.direction = DcMotorSimple.Direction.FORWARD
-            Direction.REVERSE -> crServo.direction = DcMotorSimple.Direction.REVERSE
-        }
-    }
 }
 
-class HaServoMotor(name: String, hardwareMap: HardwareMap) {
+class HaServoMotor(name: String, hardwareMap: HardwareMap, private val angleRange: Rotation2d = Rotation2d.fromDegrees(180.0)) {
     private val servo: Servo = hardwareMap.get(Servo::class.java, name)
-    val currentCommandedPosition get() = servo.position
-
-    fun setPosition(position: Rotation2d) {
-        if (0 <= position.asDegrees && position.asDegrees <= 180) {
-            servo.position = position.asDegrees
+    var currentCommandedPosition: Rotation2d
+        get() = Rotation2d.fromRotations(servo.position * angleRange.asRotations)
+        set(value) {
+            if (value.asDegrees in 0.0..angleRange.asDegrees) {
+                servo.position = value.asRotations / angleRange.asRotations
+            }
         }
-    }
+    var direction: Servo.Direction
+        get() = servo.direction
+        set(value) {
+            servo.direction = value
+        }
 }
