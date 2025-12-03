@@ -2,10 +2,7 @@ package com.hamosad.lib.components.sensors
 
 import com.hamosad.lib.math.Length
 import com.qualcomm.hardware.rev.RevColorSensorV3
-import com.qualcomm.robotcore.hardware.ColorSensor
 import com.qualcomm.robotcore.hardware.HardwareMap
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor
-import com.qualcomm.robotcore.hardware.NormalizedRGBA
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 
 class HaColorSensor(hardwareMap: HardwareMap, name: String) {
