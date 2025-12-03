@@ -11,6 +11,9 @@ import com.hamosad.lib.math.PIDController
 import com.hamosad.lib.math.Rotation2d
 import com.hamosad.lib.math.Rotation3d
 import com.hamosad.lib.math.Translation2d
+import com.hamosad.lib.math.Translation3d
+import com.hamosad.lib.vision.AprilTagsStdDevs
+import com.hamosad.lib.vision.HaAprilTagCamera
 import com.hamosad.lib.vision.HaCamera
 import com.hamosad.lib.vision.RobotPoseStdDevs
 import com.qualcomm.robotcore.hardware.DcMotorSimple
@@ -31,7 +34,7 @@ object MecanumSubsystem: Subsystem() {
     private var imu: HaIMU? = null
 
     var USE_VISION = true
-    var haCamera: HaCamera? = null
+    var haCamera: HaAprilTagCamera? = null
 
     override fun init(newHardwareMap: HardwareMap) {
         super.init(newHardwareMap)
@@ -49,11 +52,18 @@ object MecanumSubsystem: Subsystem() {
         imu = HaIMU(hardwareMap!!, "IMU")
 
         if (USE_VISION) {
-            haCamera = HaCamera(
+            haCamera = HaAprilTagCamera(
                 hardwareMap!!,
                 "Webcam 1",
                 0,
-            )
+                Length.fromMeters(3.0),
+                2000.0,
+                Translation3d(0.0, 0.2, 0.0),
+                Rotation3d.fromDegrees(45.0, 0.0, 0.0),
+                AprilTagsStdDevs(
+                    RobotPoseStdDevs(0.0, 0.0, 0.0),
+                    RobotPoseStdDevs(0.0, 0.0, 0.0)
+                ))
             haCamera?.resumeView()
             haCamera?.resumeCamera()
         }
@@ -117,7 +127,12 @@ object MecanumSubsystem: Subsystem() {
     override fun updateTelemetry(telemetry: Telemetry, dashboardPacket: TelemetryPacket) {
 
         telemetry.addData("Angle deg", currentAngle.asDegrees)
-        telemetry.addData("Requested chassis speeds angle deg", requestedChassisSpeedsTranslation.rotation.asDegrees)
+        telemetry.addData("Vision Angle", haCamera?.estimatedPose?.rotation2d?.asDegrees ?: "No vision angle data")
+        telemetry.addData("Vision X", haCamera?.estimatedPose?.translation2d?.x ?: "No translation x data")
+        telemetry.addData("Vision Y", haCamera?.estimatedPose?.translation2d?.y ?: "No translation y data")
+        telemetry.addData("has targets", haCamera?.hasTargets)
+        telemetry.addData("is in range", haCamera?.isInRange)
+
 
 //        // FL, BR, FR, BL
 //        if(wheelVelocitySetpoints.lastIndex == 3) {
@@ -131,7 +146,7 @@ object MecanumSubsystem: Subsystem() {
 //            telemetry.addData("Commanded velocity FR RPM", 0.0)
 //            telemetry.addData("Commanded velocity BL RPM", 0.0)
 //        }
-         telemetry.addData("Pis camera streaming", haCamera?.isConnected)
+         telemetry.addData("Is camera streaming", haCamera?.isConnected)
 //
 //        if (wheelVelocitySetpoints.size == 4) {
 //            dashboardPacket.put("FL setpoint RPM", wheelVelocitySetpoints[0].asRPM)

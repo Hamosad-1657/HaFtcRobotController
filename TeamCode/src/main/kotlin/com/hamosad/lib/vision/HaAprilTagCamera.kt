@@ -34,9 +34,10 @@ data class AprilTagsStdDevs(
 class HaAprilTagCamera(
     hardwareMap: HardwareMap,
     name: String,
+    visionPortalNumber: Int,
     private val maxTrustRange: Length,
     private val maxDecisionMargin: Double,
-    /** X: right, Y Down, Z: forward */
+    /** X: right, Y Down, Z: forward Meters*/
     cameraPositionMeters: Translation3d,
     cameraOrientation: Rotation3d,
     private val aprilTagStdDevs: AprilTagsStdDevs,
@@ -44,7 +45,7 @@ class HaAprilTagCamera(
     videoFormat: VisionPortal.StreamFormat = VisionPortal.StreamFormat.YUY2,
     tagFamily: AprilTagProcessor.TagFamily = AprilTagProcessor.TagFamily.TAG_36h11
 ) :
-    HaCamera(hardwareMap, name, 1, run {
+    HaCamera(hardwareMap, name, visionPortalNumber, run {
         // Define Processor Builder
         val aprilTagProcessorBuilder: AprilTagProcessor.Builder = AprilTagProcessor.Builder()
             .setTagLibrary(AprilTagGameDatabase.getCurrentGameTagLibrary())
